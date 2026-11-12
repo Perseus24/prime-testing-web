@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { ArrowRight } from 'lucide-react';
+import { setSession } from '@/lib/session';
 
 const STEPS = [
     {
@@ -24,18 +25,15 @@ export default function SignIn() {
     const [accessCode, setAccessCode] = useState('');
     const [error, setError] = useState('');
 
-
-
     async function submit(e: React.FormEvent) {
         e.preventDefault();
         try {
-            const res = await api<{ token: string }>('/login', {
+            const res = await api<{ token: string; tester: { role: string } }>('/login', {
                 method: 'POST',
                 body: JSON.stringify({ code, access_code: accessCode }),
             });
-            localStorage.setItem('token', res.token);
-
-            router.push('/tests');
+            setSession(res.token, res.tester.role);
+            router.push(res.tester.role === 'admin' ? '/admin/test-cases' : '/tests');
         } catch (err: any) {
             setError(err?.errors?.code?.[0] ?? 'Could not sign in.');
         }
@@ -43,8 +41,6 @@ export default function SignIn() {
 
     return (
         <div className="flex h-screen w-screen items-center justify-center bg-white">
-
-        
             <div className="flex max-w-5xl mx-auto max-h-5xl my-auto bg-page rounded-lg">
                 <div className="w-1/2 bg-primary flex flex-col gap-12 p-16 rounded-l-lg">
                     <div className="flex flex-col">
@@ -100,7 +96,10 @@ export default function SignIn() {
                             <input className="border-[0.5px] rounded-md px-4 py-2" id="access" type="password" value={accessCode} onChange={(e) => setAccessCode(e.target.value)} />
                         </div>
                         {error && <p role="alert">{error}</p>}
-                        <button className="bg-primary text-white py-3 font-semibold rounded-lg flex items-center justify-center" type="submit">
+                        <button
+                            onClick={submit} 
+                            className="bg-primary text-white py-3 font-semibold rounded-lg flex items-center justify-center" 
+                            type="submit">
                             Start testing
                             <ArrowRight className="ml-2" />
                         </button>

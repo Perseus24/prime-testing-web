@@ -1,9 +1,10 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL!;
+const BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('token');
     const isForm = init.body instanceof FormData;
 
+    console.log("fetching", `${BASE}${path}`, init);
     const res = await fetch(`${BASE}${path}`, {
         ...init,
         headers: {
