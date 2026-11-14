@@ -1,4 +1,5 @@
 import { Plus, Upload } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminTestCasesPage() {
     return (
@@ -17,7 +18,7 @@ export default function AdminTestCasesPage() {
 
                     <button className="bg-primary text-white flex items-center justify-center gap-2 px-4 py-2.5 rounded-md">
                         <Plus className="h-4 w-4" />
-                        <p className="text-[13px] font-medium">Add test case</p>
+                        <Link href="/admin/test-cases/add" className="text-[13px] font-medium">Add test case</Link>
                     </button>
                 </div>
             </div>
