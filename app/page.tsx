@@ -33,54 +33,54 @@ export default function SignIn() {
                 body: JSON.stringify({ code, access_code: accessCode }),
             });
             setSession(res.token, res.tester.role);
-            router.push(res.tester.role === 'admin' ? '/admin/test-cases' : '/tests');
+            router.push(res.tester.role === 'admin' ? '/admin' : '/tests');
         } catch (err: any) {
             setError(err?.errors?.code?.[0] ?? 'Could not sign in.');
         }
     }
 
     return (
-        <div className="flex h-screen w-screen items-center justify-center bg-white">
-            <div className="flex max-w-5xl mx-auto max-h-5xl my-auto bg-page rounded-lg">
-                <div className="w-1/2 bg-primary flex flex-col gap-12 p-16 rounded-l-lg">
+        <div className="flex min-h-screen w-full items-center justify-center bg-white md:p-6">
+            <div className="flex w-full max-w-5xl flex-col overflow-hidden bg-page md:flex-row md:rounded-lg">
+                <div className="flex w-full flex-col gap-8 bg-primary p-6 sm:p-10 md:w-1/2 md:gap-12 md:p-16">
                     <div className="flex flex-col">
                         <p className="text-lg font-bold text-white">PRIME</p>
-                        <p className="text-sm text-white">Pilot Testing Portal</p>
+                        <p className="text-sm text-white/80">Pilot Testing Portal</p>
                     </div>
 
                     <section className="flex flex-col gap-2">
-                        <h1 className="text-3xl font-bold text-white">Pilot Testing for PRIME</h1>
-                        <p className="text-sm text-white mt--12">
-                            Work through each test case on the PRIME web dashboard and mobile app, 
+                        <h1 className="text-2xl font-bold text-white sm:text-3xl">Pilot Testing for PRIME</h1>
+                        <p className="text-sm leading-relaxed text-white/80">
+                            Work through each test case on the PRIME web dashboard and mobile app,
                             then record whether it passed or failed.
                         </p>
                     </section>
 
-                    <section className="flex flex-col gap-3">
+                    <section className="hidden flex-col gap-3 md:flex">
                         {
                             STEPS.map((step, i) => (
                                 <div
                                     key={i}
-                                    className="flex rounded-md border-[0.1px] border-line py-4 px-5 gap-4"
+                                    className="flex gap-4 rounded-md border border-white/20 px-5 py-4"
                                 >
-                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white">
+                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white">
                                         <p className="text-sm font-bold text-primary">{i + 1}</p>
                                     </div>
 
-                                    <div className="flex flex-col ">
-                                        <p className="text-white font-semibold text-sm">{step.title}</p>
-                                        <p className="text-[13px] text-white">{step.description}</p>
+                                    <div className="flex flex-col">
+                                        <p className="text-sm font-semibold text-white">{step.title}</p>
+                                        <p className="text-[13px] text-white/80">{step.description}</p>
                                     </div>
                                 </div>
                             ))
                         }
                     </section>
 
-                    <p className="text-xs text-line">Promoting Resilient Innovation for Microenterprise Empowerment</p>
+                    <p className="hidden text-xs text-white/60 md:block">Promoting Resilient Innovation for Microenterprise Empowerment</p>
                 </div>
-                
-                <div className="w-1/2 flex flex-col justify-center items-center gap-4 px-12 py-8 rounded-r-lg">
-                    <form className="flex flex-col gap-4 bg-white rounded-md p-10 gap-8 shadow-md">
+
+                <div className="flex w-full flex-col items-center justify-center px-4 py-8 sm:px-10 md:w-1/2 md:px-12">
+                    <form className="flex w-full max-w-md flex-col gap-6 rounded-md bg-white p-6 shadow-md sm:p-10">
                         <div className="flex flex-col gap-1">
                             <p className="text-lg font-semibold">Sign in to start testing</p>
                             <p className="text-sm text-gray-500">
@@ -88,17 +88,21 @@ export default function SignIn() {
                             </p>
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="code" className="font-medium text-sm">Tester ID</label>
-                            <input className="border-[0.5px] rounded-md px-4 py-2" id="code" value={code} onChange={(e) => setCode(e.target.value)} />
+                            <label htmlFor="code" className="text-sm font-medium">Tester ID</label>
+                            <input
+                                className="w-full rounded-md border border-gray-300 px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                id="code" value={code} onChange={(e) => setCode(e.target.value)} />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="access" className="font-medium text-sm">Access code</label>
-                            <input className="border-[0.5px] rounded-md px-4 py-2" id="access" type="password" value={accessCode} onChange={(e) => setAccessCode(e.target.value)} />
+                            <label htmlFor="access" className="text-sm font-medium">Access code</label>
+                            <input
+                                className="w-full rounded-md border border-gray-300 px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                                id="access" type="password" value={accessCode} onChange={(e) => setAccessCode(e.target.value)} />
                         </div>
-                        {error && <p role="alert">{error}</p>}
+                        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
                         <button
-                            onClick={submit} 
-                            className="bg-primary text-white py-3 font-semibold rounded-lg flex items-center justify-center" 
+                            onClick={submit}
+                            className="flex w-full items-center justify-center rounded-lg bg-primary py-3 font-semibold text-white transition hover:opacity-90"
                             type="submit">
                             Start testing
                             <ArrowRight className="ml-2" />
