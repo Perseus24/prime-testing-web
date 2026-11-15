@@ -70,7 +70,7 @@ export default function SignIn() {
             </div>
             <div className="leading-tight">
                 <p className="text-sm font-bold">PRIME</p>
-                <p className="text-xs text-muted">Pilot Test Portal</p>
+                <p className="text-xs text-subtle">Pilot Test Portal</p>
             </div>
             </header>
 
@@ -79,7 +79,7 @@ export default function SignIn() {
                 <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
                 Sign in to start testing
                 </h1>
-                <p className="mt-3 text-[15px] leading-relaxed text-muted">
+                <p className="mt-3 text-[15px] leading-relaxed text-subtle">
                 Use the tester ID and access code the PRIME team sent you.
                 </p>
 
@@ -88,7 +88,7 @@ export default function SignIn() {
                     <li key={label} className="flex items-center gap-3">
                     <span
                         aria-current={i === 0 ? 'step' : undefined}
-                        className={`flex items-center gap-2 ${i === 0 ? 'font-semibold text-primary' : 'text-muted'}`}
+                        className={`flex items-center gap-2 ${i === 0 ? 'font-semibold text-primary' : 'text-subtle'}`}
                     >
                         <span
                         className={`grid h-6 w-6 place-items-center rounded-full text-[11px] font-semibold ${
@@ -116,7 +116,7 @@ export default function SignIn() {
                     placeholder="e.g. T-04"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="h-12 w-full rounded-xl border border-line bg-white px-4 text-[15px] outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="h-12 w-full rounded-xl border border-line bg-white px-4 text-[15px] outline-none transition placeholder:text-subtle/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                 </div>
 
@@ -132,13 +132,13 @@ export default function SignIn() {
                         placeholder="Enter your access code"
                         value={accessCode}
                         onChange={(e) => setAccessCode(e.target.value)}
-                        className="h-12 w-full rounded-xl border border-line bg-white pl-4 pr-12 text-[15px] outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="h-12 w-full rounded-xl border border-line bg-white pl-4 pr-12 text-[15px] outline-none transition placeholder:text-subtle/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                     <button
                         type="button"
                         onClick={() => setShowCode((v) => !v)}
                         aria-label={showCode ? 'Hide access code' : 'Show access code'}
-                        className="absolute right-1 top-1 grid h-10 w-10 place-items-center rounded-lg text-muted hover:text-ink"
+                        className="absolute right-1 top-1 grid h-10 w-10 place-items-center rounded-lg text-subtle hover:text-ink"
                     >
                         {showCode ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
@@ -174,13 +174,13 @@ export default function SignIn() {
                 </button>
                 </form>
 
-                <p className="mt-6 text-sm text-muted">
+                <p className="mt-6 text-sm text-subtle">
                 Lost your access code? Ask the PRIME team to send you a new one.
                 </p>
             </div>
             </main>
 
-            <footer className="text-xs text-muted">
+            <footer className="text-xs text-subtle">
                 Promoting Resilient Innovation for Microenterprise Empowerment
             </footer>
         </div>
