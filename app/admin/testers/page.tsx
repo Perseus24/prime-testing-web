@@ -98,7 +98,7 @@ export default function AdminTestersPage() {
             </div>
 
             {/* body */}
-            <Table>
+            <Table className="bg-white">
                 <TableHeader>
                     <TableRow className="hover:bg-primary-tint/40 data-[state=selected]:bg-primary-tint">
                         <TableHead className="p-3 uppercase text-[13px] text-gray-600 font-medium">

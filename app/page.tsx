@@ -27,7 +27,7 @@ export default function SignIn() {
             body: JSON.stringify({ code, access_code: accessCode }),
         });
         setSession(res.token, res.tester.role);
-        router.push(res.tester.role === 'admin' ? '/admin/test-cases' : '/tests');
+        router.push(res.tester.role === 'admin' ? '/admin' : '/test-cases');
         } catch (err: any) {
         setError(err?.errors?.code?.[0] ?? 'Could not sign in.');
         } finally {
@@ -37,7 +37,6 @@ export default function SignIn() {
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-page text-ink">
-        {/* contour lines, like the elevation lines on a hazard map */}
         <svg
             aria-hidden="true"
             viewBox="0 0 1000 1000"

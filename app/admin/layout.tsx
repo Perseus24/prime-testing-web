@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: ReactNode}) {
                     <button onClick={signout} className="cursor-pointer hover:text-blue-800 text-sm font-semibold text-primary" >Logout</button>
                 </div>
             </header>
-            <main className="p-6">
+            <main className="p-6 bg-page min-h-screen">
                 {children}
             </main>
             <Toaster richColors position="top-right" />
