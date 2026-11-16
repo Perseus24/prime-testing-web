@@ -12,7 +12,7 @@ type TestCase = {
     title: string;
     platform: string;
     priority: string;
-    result: TestResult | null
+    result: 'passed' | 'failed' | 'blocked' | null;
     number_of_steps: number;
 }
 
@@ -67,9 +67,9 @@ export default function MyTestCasesPage() {
 
     const progressCounts = useMemo(() => {
         return [
-            { key: 'passed', title: 'Passed', dot: 'bg-[#2E8B57]', count: testCases.filter(t => t.result?.result === 'passed').length },
-            { key: 'failed', title: 'Failed', dot: 'bg-[#D9453B]', count: testCases.filter(t => t.result?.result === 'failed').length },
-            { key: 'blocked', title: 'Blocked', dot: 'bg-[#E0A100]', count: testCases.filter(t => t.result?.result === 'blocked').length },
+            { key: 'passed', title: 'Passed', dot: 'bg-[#2E8B57]', count: testCases.filter(t => t.result === 'passed').length },
+            { key: 'failed', title: 'Failed', dot: 'bg-[#D9453B]', count: testCases.filter(t => t.result === 'failed').length },
+            { key: 'blocked', title: 'Blocked', dot: 'bg-[#E0A100]', count: testCases.filter(t => t.result === 'blocked').length },
             { key: 'remaining', title: 'Remaining', dot: 'bg-line border border-[#8A909C]', count: testCases.filter(t => !t.result).length },
         ]
     }, [testCases])
@@ -179,7 +179,7 @@ export default function MyTestCasesPage() {
                     )}
 
                     {visibleTestCases.map((tc) => {
-                        const status = tc.result ? STATUS[tc.result.result as keyof typeof STATUS] : null;
+                        const status = tc.result ? STATUS[tc.result as keyof typeof STATUS] : null;
                         return (
                             <div
                                 key={tc.code}

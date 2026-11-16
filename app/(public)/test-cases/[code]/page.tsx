@@ -107,7 +107,7 @@ export default function RunTestCasePage() {
                 });
             } catch (err: any) {
                 toast.error(err?.message ?? 'Could not load this test case.');
-                router.push('/tests');
+                router.push('/test-cases');
             }
         };
         load();
@@ -131,7 +131,7 @@ export default function RunTestCasePage() {
     function saveDraft() {
         writeDraft(code, form!);
         toast.success('Draft saved on this device');
-        router.push('/tests');
+        router.push('/test-cases');
     }
 
     async function submit() {
@@ -156,7 +156,7 @@ export default function RunTestCasePage() {
             await api(`/test-cases/${code}/result`, { method: 'POST', body: JSON.stringify(payload) });
             clearDraft(code);
             toast.success('Result saved');
-            router.push('/tests');
+            router.push('/test-cases');
         } catch (err: any) {
             const firstValidationError = err?.errors
                 ? (Object.values(err.errors) as string[][])[0]?.[0]
@@ -174,7 +174,7 @@ export default function RunTestCasePage() {
     return (
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6">
             <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
-                <button type="button" onClick={() => router.push('/tests')} className="font-medium text-primary">
+                <button type="button" onClick={() => router.push('/test-cases')} className="font-medium text-primary">
                     My test cases
                 </button>
                 <span aria-hidden className="text-subtle">/</span>

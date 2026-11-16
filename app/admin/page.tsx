@@ -1,28 +1,21 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Download } from "lucide-react";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 type Status = 'passed' | 'failed' | 'blocked' | null;
 type Row = { code: string; title: string; platform: 'web' | 'mobile'; results: Status[] }; // one result per tester, same order as TESTERS
-
-// SAMPLE DATA: replace with the fetched results later
+type Tester = {
+    code: string
+    name: string
+}
+type Response = {
+    data: Row[];
+    testers: Tester[]
+}
 const SYMBOL: Record<string, Status> = { P: 'passed', F: 'failed', B: 'blocked', '-': null };
-const r = (s: string) => s.split('').map((c) => SYMBOL[c]);
-
-const TESTERS = Array.from({ length: 10 }, (_, i) => `T${String(i + 1).padStart(2, '0')}`);
-const TEST_CASES: Row[] = [
-    { code: 'TC-01', title: 'Sign in with your LGU account', platform: 'web', results: r('PPPPPPPPPP') },
-    { code: 'TC-02', title: 'View the LGU summary dashboard', platform: 'web', results: r('PPPPPPPPP-') },
-    { code: 'TC-03', title: 'Filter analytics by municipality and date', platform: 'web', results: r('PPPPPPFPPP') },
-    { code: 'TC-04', title: 'Open the spatial hotspots map', platform: 'mobile', results: r('PFPFPFPPPP') },
-    { code: 'TC-05', title: 'Read the MSME scorecard details', platform: 'mobile', results: r('PPBBPPPPBP') },
-    { code: 'TC-06', title: 'Review a business continuity plan', platform: 'web', results: r('PPP-PPPPP-') },
-    { code: 'TC-07', title: 'Open survey results by sector', platform: 'web', results: r('PPP-PPPFP-') },
-    { code: 'TC-08', title: 'Export an analytics report', platform: 'web', results: r('PPP-PFPPP-') },
-    { code: 'TC-09', title: 'Sign in and view the dashboard on mobile', platform: 'mobile', results: r('PPP-PPPPPP') },
-    { code: 'TC-10', title: 'Open the dashboard with no internet connection', platform: 'mobile', results: r('PFP-BPPPFP') },
-];
 
 const CELL = {
     passed: { sym: 'P', label: 'Passed', cls: 'bg-pass-bg text-pass' },
@@ -35,19 +28,22 @@ const LEGEND = [...Object.values(CELL), NOT_TESTED];
 const count = (list: Status[], s: Status) => list.filter((x) => x === s).length;
 
 export default function ResultsPage() {
+    const [testCases, setTestCases] = useState<Row[]>([]);
+    const [testers, setTesters] = useState<{ code: string; name: string }[]>([]);
+
     const stats = useMemo(() => {
-        const all = TEST_CASES.flatMap((t) => t.results);
+        const all = testCases.flatMap((t) => t.results);
         const passed = count(all, 'passed');
         const failed = count(all, 'failed');
         const blocked = count(all, 'blocked');
         const recorded = passed + failed + blocked;
 
-        const progress = TESTERS.map((code, i) => {
-            const done = TEST_CASES.filter((t) => t.results[i]).length;
-            return { code, done, full: done === TEST_CASES.length };
+        const progress = testers.map((code, i) => {
+            const done = testCases.filter((t) => t.results[i]).length;
+            return { code, done, full: done === testCases.length };
         });
 
-        const attention = TEST_CASES
+        const attention = testCases
             .map((t) => ({ t, failed: count(t.results, 'failed'), blocked: count(t.results, 'blocked') }))
             .filter((x) => x.failed > 0 || x.blocked > 0)
             .sort((a, b) => b.failed - a.failed || b.blocked - a.blocked)
@@ -56,16 +52,33 @@ export default function ResultsPage() {
         return {
             passed, failed, blocked, recorded,
             passRate: recorded ? Math.round((passed / recorded) * 100) : 0,
-            failedCases: TEST_CASES.filter((t) => t.results.includes('failed')).length,
-            blockedCases: TEST_CASES.filter((t) => t.results.includes('blocked')).length,
+            failedCases: testCases.filter((t) => t.results.includes('failed')).length,
+            blockedCases: testCases.filter((t) => t.results.includes('blocked')).length,
             testersDone: progress.filter((p) => p.full).length,
             progress,
             attention,
         };
-    }, []);
+    }, [testCases, testers]);
+
+    useEffect(() => {
+        const fetchResults = async () => {
+            try {
+                const res = await api('/admin/results', {
+                    method: 'GET',
+                });
+
+                setTestCases((res as Response).data)
+                setTesters((res as Response).testers)
+            } catch (err: any) {
+                toast.error(err?.message ?? 'Could not fetch test cases.');
+            }
+        }
+
+        fetchResults();
+    }, [])
 
     const summary = [
-        { title: 'Testers finished', value: stats.testersDone, note: `of ${TESTERS.length}`, color: '' },
+        { title: 'Testers finished', value: stats.testersDone, note: `of ${testers.length}`, color: '' },
         { title: 'Pass rate', value: `${stats.passRate}%`, note: `of ${stats.recorded} results`, color: 'text-pass' },
         { title: 'Failed', value: stats.failed, note: `across ${stats.failedCases} test cases`, color: 'text-fail' },
         { title: 'Blocked', value: stats.blocked, note: `across ${stats.blockedCases} test cases`, color: 'text-blocked' },
@@ -121,12 +134,12 @@ export default function ResultsPage() {
                             <div className="flex items-center gap-1.5 border-b border-line pb-1.5 text-xs font-semibold text-subtle">
                                 <p className="w-14 shrink-0">ID</p>
                                 <p className="min-w-60 flex-1">Test case</p>
-                                {TESTERS.map((t) => (
-                                    <p key={t} className="w-10 shrink-0 text-center">{t}</p>
+                                {testers.map((t) => (
+                                    <p key={t.code} className="w-10 shrink-0 text-center">{t.code}</p>
                                 ))}
                             </div>
 
-                            {TEST_CASES.map((tc) => (
+                            {testCases.map((tc) => (
                                 <div key={tc.code} className="flex items-center gap-1.5 py-1">
                                     <p className="w-14 shrink-0 text-[13px] font-semibold text-subtle">{tc.code}</p>
                                     <div className="min-w-60 flex-1">
@@ -137,9 +150,9 @@ export default function ResultsPage() {
                                         const cell = res ? CELL[res] : NOT_TESTED;
                                         return (
                                             <span
-                                                key={TESTERS[i]}
+                                                key={testers[i].code}
                                                 role="img"
-                                                aria-label={`Tester ${TESTERS[i]}, ${tc.code}: ${cell.label}`}
+                                                aria-label={`Tester ${testers[i]}, ${tc.code}: ${cell.label}`}
                                                 className={`grid h-9 w-10 shrink-0 place-items-center rounded-lg text-[13px] font-bold ${cell.cls}`}
                                             >
                                                 {cell.sym}
@@ -156,7 +169,7 @@ export default function ResultsPage() {
                     <section className="flex flex-col gap-4 rounded-md border border-line bg-white p-6">
                         <h2 className="text-lg font-semibold">Needs attention</h2>
                         <p className="text-[13px] leading-relaxed text-subtle">
-                            Test cases with the most failures, out of {TESTERS.length} testers.
+                            Test cases with the most failures, out of {testers.length} testers.
                         </p>
                         {stats.attention.map(({ t, failed, blocked }) => (
                             <div key={t.code} className="flex flex-col gap-2 border-t border-line pt-3.5">
@@ -165,7 +178,7 @@ export default function ResultsPage() {
                                     <span className="text-sm font-medium leading-snug">{t.title}</span>
                                 </div>
                                 <div className="h-2 overflow-hidden rounded-full bg-page">
-                                    <div className="h-full rounded-full bg-[#D9453B]" style={{ width: `${(failed / TESTERS.length) * 100}%` }} />
+                                    <div className="h-full rounded-full bg-[#D9453B]" style={{ width: `${(failed / testers.length) * 100}%` }} />
                                 </div>
                                 <p className="text-[13px] text-gray-700">{failed} failed · {blocked} blocked</p>
                             </div>
@@ -175,12 +188,12 @@ export default function ResultsPage() {
                     <section className="flex flex-col gap-4 rounded-md border border-line bg-white p-6">
                         <h2 className="text-lg font-semibold">Tester progress</h2>
                         {stats.progress.map((p) => (
-                            <div key={p.code} className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                                <p className="w-9 shrink-0 text-[13px] font-semibold text-subtle">{p.code}</p>
+                            <div key={p.code.code} className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                                <p className="w-9 shrink-0 text-[13px] font-semibold text-subtle">{p.code.code}</p>
                                 <div className="h-2 min-w-24 flex-1 overflow-hidden rounded-full bg-line">
-                                    <div className="h-full rounded-full bg-primary" style={{ width: `${(p.done / TEST_CASES.length) * 100}%` }} />
+                                    <div className="h-full rounded-full bg-primary" style={{ width: `${(p.done / testCases.length) * 100}%` }} />
                                 </div>
-                                <p className="w-16 shrink-0 text-[13px] text-gray-700">{p.done} of {TEST_CASES.length}</p>
+                                <p className="w-16 shrink-0 text-[13px] text-gray-700">{p.done} of {testCases.length}</p>
                                 <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${p.full ? 'bg-pass-bg text-pass' : 'bg-primary-tint text-primary'}`}>
                                     {p.full ? 'Finished' : 'In progress'}
                                 </span>

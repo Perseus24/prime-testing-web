@@ -152,7 +152,7 @@ export default function AdminTestCasesPage() {
 
                                     <div className="flex items-center gap-4">
                                         <Link
-                                            href="/admin/test-cases/edit"
+                                            href={`/admin/test-cases/${t.code}/edit`}
                                             className="text-[13px] text-primary hover:underline font-semibold"
                                         >
                                                 Edit
