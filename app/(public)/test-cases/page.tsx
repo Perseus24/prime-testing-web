@@ -1,5 +1,6 @@
 "use client";
 
+import SurveyCard from "@/components/external-survey-card";
 import { api } from "@/lib/api";
 import { ArrowRight, Monitor, Smartphone } from "lucide-react";
 import Link from "next/link";
@@ -25,11 +26,15 @@ type TestResult = {
     device: string
 }
 
-type TestCasesResponse = {
-    data: TestCase[];
-    // meta: Meta
-}
+const SURVEY_URLS = [
+    'https://forms.gle/33hyY6GTbUQwLQct9',
+    'https://forms.gle/3uJcombctpKosEwv9'
+];
 
+const SURVEY_SUBTITLES = [
+    { platform: 'Web', rest: 'Application: LGU Evaluation and Feature Validation (Pilot Testing)' },
+    { platform: 'Mobile', rest: 'Application: LGU Evaluation and Feature Validation (Pilot Testing)' },
+];
 const STATUS = {
     passed: { label: 'Pass', cls: 'bg-pass-bg text-pass' },
     failed: { label: 'Fail', cls: 'bg-fail-bg text-fail' },
@@ -217,6 +222,11 @@ export default function MyTestCasesPage() {
                 </section>
 
                 <aside className="flex w-full min-w-0 flex-col gap-5 lg:w-80 lg:shrink-0">
+                    <SurveyCard 
+                        survey_urls={SURVEY_URLS}
+                        subtitles={SURVEY_SUBTITLES}
+                    finished={true} />
+                    
                     <section className="flex flex-col gap-4 rounded-md border border-line bg-white p-6">
                         <h2 className="text-lg font-semibold">How to record a result</h2>
                         {[

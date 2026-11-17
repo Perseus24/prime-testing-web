@@ -6,6 +6,7 @@ import { ArrowRight, Ban, CircleCheck, CircleX, Loader2, Monitor, Smartphone } f
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { priorityClass } from "@/lib/priority";
+import SurveyCard from "@/components/external-survey-card";
 
 type Result = 'passed' | 'failed' | 'blocked';
 
