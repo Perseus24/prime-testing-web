@@ -2,7 +2,7 @@
 
 import { api } from "@/lib/api";
 import { priorityClass } from "@/lib/priority";
-import { Monitor, Plus, Smartphone, Upload } from "lucide-react";
+import { Eye, EyeClosed, Monitor, Plus, Smartphone, Upload } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ type TestCase = {
     priority: string;
     result_count: number;
     number_of_steps: number;
+    hide: boolean
 }
 
 type Meta = {
@@ -40,6 +41,20 @@ export default function AdminTestCasesPage() {
             { key: 'mobile', title: 'Mobile', count: testCases.filter(t => t.platform === 'mobile').length },
         ]
     }, [testCases]);
+
+    async function toggleVisibilityTestCase(hide: boolean, code: string) {
+        try {
+            const payload = {
+                hide: hide
+            }
+            const res = await api<{ hide: boolean }>(`/admin/test-cases/${code}/hide`, {
+                method: 'PUT',
+                body: JSON.stringify(payload),
+            });
+        } catch (err: any) {
+            toast.error(err?.message ?? 'Could not reset the code.');
+        }
+    }
 
     useEffect(() => {
         const fetchTestCases = async () => {
@@ -113,7 +128,9 @@ export default function AdminTestCasesPage() {
                         filteredTestCases.map(t => (
                             <div
                                 key={t.code}
-                                className="flex items-center justify-between px-6 py-4 border-b border-[0.1px] border-line"
+                                className={
+                                    `flex items-center justify-between px-6 py-4 border-b border-[0.1px] border-line ${t.hide ? 'bg-gray-100' : ''}`
+                                }
                             >
                                 <div className="flex items-center gap-8">
                                     <p className="font-semibold text-[13px] text-gray-600">{t.code}</p>
@@ -136,7 +153,6 @@ export default function AdminTestCasesPage() {
                                             { t.platform === 'web' ? <Monitor className="h-3 w-3" /> : <Smartphone className="h-3 w-3" /> }
                                             <p>{t.platform.charAt(0).toUpperCase() + t.platform.slice(1)}</p>
                                         </div>
-
                                         <p
                                             className={
                                                 `${priorityClass(t.priority)} px-2 py-1 font-medium rounded-full text-xs`
@@ -157,6 +173,18 @@ export default function AdminTestCasesPage() {
                                         >
                                                 Edit
                                         </Link>
+                                        <button
+                                            onClick={() => toggleVisibilityTestCase(!t.hide, t.code)}
+                                            className="cursor-pointer text-[13px] flex items-center justify-center text-primary hover:underline font-semibold"
+                                            >
+                                            {
+                                                t.hide ? (
+                                                    <EyeClosed className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )
+                                            }
+                                        </button>
                                     </div>
                                 </div>
                             </div>

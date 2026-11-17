@@ -39,7 +39,7 @@ export default function SurveyCard({ survey_urls, subtitles, finished }: Props) 
 
             {
                 survey_urls.map((survey, i) => (
-                    <>
+                    <div key={i}>
                         <div className="flex flex-col items-center gap-2 rounded-xl bg-page px-4 py-5">
                             <div className="rounded-lg border border-line bg-white p-3">
                                 <QRCodeSVG value={SURVEY_URL} size={160} level="M" bgColor="#FFFFFF" fgColor="#1A1F2B" />
@@ -60,7 +60,7 @@ export default function SurveyCard({ survey_urls, subtitles, finished }: Props) 
                             Open survey
                             <ExternalLink className="h-4 w-4" />
                         </a>
-                    </>
+                    </div>
                 ))
             }
         </section>
